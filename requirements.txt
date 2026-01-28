@@ -1,0 +1,5 @@
+npm install @clerk/nextjs
+npm i @arcjet/next --legacy-peer-deps
+npx prisma migrate dev --name create-models
+npm install react-email -D -E --legacy-peer-deps
+npm install resend

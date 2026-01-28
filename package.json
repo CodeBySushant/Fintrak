@@ -11,7 +11,7 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
-    "@arcjet/next": "^1.0.0-alpha.34",
+    "@arcjet/next": "^1.0.0",
     "@clerk/nextjs": "^6.36.10",
     "@google/generative-ai": "^0.21.0",
     "@hookform/resolvers": "^3.9.1",
@@ -38,7 +38,7 @@
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.2",
     "react-spinners": "^0.14.1",
-    "recharts": "^2.14.1",
+    "recharts": "^2.15.4",
     "resend": "^4.0.1",
     "sonner": "^1.7.0",
     "tailwind-merge": "^2.5.5",
