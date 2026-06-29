@@ -43,7 +43,7 @@ export default function Navbar() {
       >
         <Link href="/" className="flex items-center" aria-label="Fintrak home">
           <Image
-            src="/logo.png"
+            src="/fintrak-logo.svg"
             alt="Fintrak"
             width={160}
             height={40}

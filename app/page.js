@@ -324,7 +324,7 @@ export default function LandingPage() {
           <div className="grid gap-12 lg:grid-cols-[1.4fr_repeat(3,1fr)]">
             <div>
               <Image
-                src="/logo.png"
+                src="/fintrak-logo.png"
                 alt="Fintrak"
                 width={140}
                 height={36}
