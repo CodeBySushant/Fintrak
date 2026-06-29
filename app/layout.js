@@ -3,17 +3,15 @@ import "./globals.css";
 import Header from "@/components/header";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "sonner";
+import { CurrencyProvider } from "@/components/currency-context";
+import { getUserCurrency } from "@/lib/getUserCurrency";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
-
-// Display serif — used only for headlines, with restraint.
 const fraunces = Fraunces({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   variable: "--font-display",
 });
-
-// Monospaced, tabular figures — every money value uses this. The signature.
 const mono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
@@ -26,7 +24,10 @@ export const metadata = {
     "Fintrak brings income, expenses, budgets and receipts into one place, with automatic categories and insights that make sense.",
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  // seed the client currency context with the user's saved choice
+  const currency = await getUserCurrency();
+
   return (
     <ClerkProvider>
       <html lang="en">
@@ -36,13 +37,11 @@ export default function RootLayout({ children }) {
         <body
           className={`${inter.className} ${inter.variable} ${fraunces.variable} ${mono.variable}`}
         >
-          <Header />
-          <main className="min-h-screen">{children}</main>
-          <Toaster richColors />
-          {/*
-            Old global footer removed: the landing page ships its own footer.
-            For in-app pages add a small footer to app/(main)/layout.js.
-          */}
+          <CurrencyProvider initialCode={currency}>
+            <Header />
+            <main className="min-h-screen">{children}</main>
+            <Toaster richColors />
+          </CurrencyProvider>
         </body>
       </html>
     </ClerkProvider>

@@ -14,6 +14,7 @@ model User {
   email         String    @unique
   name          String?
   imageUrl      String?
+  currency    String   @default("USD") 
   transactions  Transaction[]
   accounts      Account[]
   budgets       Budget[]
@@ -63,7 +64,6 @@ model Transaction {
   @@index([accountId])
   @@map("transactions")
 }
-
 
 model Budget {
   id          String       @id @default(uuid())

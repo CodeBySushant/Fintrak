@@ -11,6 +11,7 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
+import CurrencySelector from "@/components/currency-selector";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -35,7 +36,7 @@ export default function Navbar() {
       <nav
         aria-label="Primary"
         className={[
-          "mx-auto flex max-w-6xl items-center justify-between gap-4 rounded-full px-4 sm:px-5 py-2.5 transition-all duration-300",
+          "mx-auto flex max-w-7xl items-center justify-between gap-4 rounded-full px-4 sm:px-5 py-2.5 transition-all duration-300",
           scrolled
             ? "border border-[#e5e7eb] bg-white/75 backdrop-blur-xl shadow-premium"
             : "border border-transparent bg-white/40 backdrop-blur-sm",
@@ -54,22 +55,13 @@ export default function Navbar() {
 
         <div className="hidden items-center gap-8 md:flex">
           <SignedOut>
-            <a
-              href="#features"
-              className="text-[15px] font-medium text-[#374151] transition-colors hover:text-[#111827]"
-            >
+            <a href="#features" className="text-[15px] font-medium text-[#374151] transition-colors hover:text-[#111827]">
               Features
             </a>
-            <a
-              href="#showcase"
-              className="text-[15px] font-medium text-[#374151] transition-colors hover:text-[#111827]"
-            >
+            <a href="#showcase" className="text-[15px] font-medium text-[#374151] transition-colors hover:text-[#111827]">
               Product
             </a>
-            <a
-              href="#testimonials"
-              className="text-[15px] font-medium text-[#374151] transition-colors hover:text-[#111827]"
-            >
+            <a href="#testimonials" className="text-[15px] font-medium text-[#374151] transition-colors hover:text-[#111827]">
               Customers
             </a>
           </SignedOut>
@@ -77,6 +69,9 @@ export default function Navbar() {
 
         <div className="flex items-center gap-2.5">
           <SignedIn>
+            {/* display-currency switcher (saved to the user) */}
+            <CurrencySelector />
+
             <Link href="/dashboard">
               <Button
                 variant="outline"
@@ -92,9 +87,7 @@ export default function Navbar() {
                 <span className="hidden md:inline">Add Transaction</span>
               </Button>
             </Link>
-            <UserButton
-              appearance={{ elements: { avatarBox: "w-9 h-9" } }}
-            />
+            <UserButton appearance={{ elements: { avatarBox: "w-9 h-9" } }} />
           </SignedIn>
 
           <SignedOut>
