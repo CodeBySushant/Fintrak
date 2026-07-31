@@ -5,6 +5,7 @@ import { TransactionTable } from "../_components/transaction-table";
 import { notFound } from "next/navigation";
 import { AccountChart } from "../_components/account-chart";
 import Amount from "@/components/amount";
+import ExportTransactions from "@/components/export-transactions";
 
 export default async function AccountPage({ params }) {
   // Next.js 15: params is a Promise and must be awaited
@@ -30,13 +31,19 @@ export default async function AccountPage({ params }) {
           </p>
         </div>
 
-        <div className="text-right pb-2">
-          <div className="text-xl sm:text-2xl font-bold">
-            <Amount value={account.balance} />
+        <div className="flex items-end gap-4 pb-2">
+          <div className="text-right">
+            <div className="text-xl sm:text-2xl font-bold">
+              <Amount value={account.balance} />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {account._count.transactions} Transactions
+            </p>
           </div>
-          <p className="text-sm text-muted-foreground">
-            {account._count.transactions} Transactions
-          </p>
+          <ExportTransactions
+            transactions={transactions}
+            title={`${account.name} Account`}
+          />
         </div>
       </div>
 

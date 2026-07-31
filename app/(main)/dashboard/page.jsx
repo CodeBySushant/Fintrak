@@ -8,6 +8,7 @@ import { BudgetProgress } from "./_components/budget-progress";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import { DashboardOverview } from "./_components/transaction-overview";
+import ExportTransactions from "@/components/export-transactions";
 
 export default async function DashboardPage() {
   const [accounts, transactions] = await Promise.all([
@@ -20,6 +21,14 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
+      {/* Export all transactions */}
+      <div className="flex justify-end">
+        <ExportTransactions
+          transactions={transactions || []}
+          title="All Transactions"
+        />
+      </div>
+
       {/* Budget Progress */}
       <BudgetProgress
         initialBudget={budgetData?.budget}
