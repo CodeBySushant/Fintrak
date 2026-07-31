@@ -22,6 +22,16 @@ export const metadata = {
   title: "Fintrak — See your money clearly",
   description:
     "Fintrak brings income, expenses, budgets and receipts into one place, with automatic categories and insights that make sense.",
+  icons: {
+    icon: "/favicon.svg",
+  },
+};
+
+// Explicit viewport so the browser renders at true device width instead of
+// falling back to a scaled ~980px virtual viewport (the "zoomed" bug).
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default async function RootLayout({ children }) {
@@ -31,9 +41,6 @@ export default async function RootLayout({ children }) {
   return (
     <ClerkProvider>
       <html lang="en">
-        <head>
-          <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        </head>
         <body
           className={`${inter.className} ${inter.variable} ${fraunces.variable} ${mono.variable}`}
         >
