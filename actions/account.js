@@ -67,12 +67,13 @@ export async function bulkDeleteTransactions(transactionIds) {
       },
     });
 
-    // Group transactions by account to update balances
+    // Group transactions by account to update balances.
+    // IMPORTANT: transaction.amount is a Prisma Decimal OBJECT — adding it
+    // to a JS number coerces to string ("0" + "150" = "0150"), which used
+    // to write garbage balance adjustments. Convert to number first.
     const accountBalanceChanges = transactions.reduce((acc, transaction) => {
-      const change =
-        transaction.type === "EXPENSE"
-          ? transaction.amount
-          : -transaction.amount;
+      const amount = transaction.amount.toNumber();
+      const change = transaction.type === "EXPENSE" ? amount : -amount;
       acc[transaction.accountId] = (acc[transaction.accountId] || 0) + change;
       return acc;
     }, {});

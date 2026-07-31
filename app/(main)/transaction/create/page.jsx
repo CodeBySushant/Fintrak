@@ -1,11 +1,14 @@
+import { Suspense } from "react";
+import { BarLoader } from "react-spinners";
 import { getUserAccounts } from "@/actions/dashboard";
 import { defaultCategories } from "@/data/categories";
 import { AddTransactionForm } from "../_components/transaction-form";
 import { getTransaction } from "@/actions/transaction";
 
 export default async function AddTransactionPage({ searchParams }) {
+  // Next.js 15: searchParams is a Promise and must be awaited
+  const { edit: editId } = await searchParams;
   const accounts = await getUserAccounts();
-  const editId = searchParams?.edit;
 
   let initialData = null;
   if (editId) {
@@ -18,12 +21,18 @@ export default async function AddTransactionPage({ searchParams }) {
       <div className="flex justify-center md:justify-normal mb-8">
         <h1 className="text-5xl gradient-title ">Add Transaction</h1>
       </div>
-      <AddTransactionForm
-        accounts={accounts}
-        categories={defaultCategories}
-        editMode={!!editId}
-        initialData={initialData}
-      />
+      {/* AddTransactionForm uses useSearchParams(), which requires a
+          Suspense boundary or `next build` fails prerendering this page */}
+      <Suspense
+        fallback={<BarLoader className="mt-4" width={"100%"} color="#111827" />}
+      >
+        <AddTransactionForm
+          accounts={accounts}
+          categories={defaultCategories}
+          editMode={!!editId}
+          initialData={initialData}
+        />
+      </Suspense>
     </div>
   );
 }

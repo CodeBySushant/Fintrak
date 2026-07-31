@@ -30,26 +30,23 @@ export async function getUserAccounts() {
     throw new Error("User not found");
   }
 
-  try {
-    const accounts = await db.account.findMany({
-      where: { userId: user.id },
-      orderBy: { createdAt: "desc" },
-      include: {
-        _count: {
-          select: {
-            transactions: true,
-          },
+  // NOTE: no try/catch that swallows errors — if the DB call fails we let
+  // it throw so the route's error boundary shows a proper error screen
+  // instead of the page crashing on `accounts.length` of undefined.
+  const accounts = await db.account.findMany({
+    where: { userId: user.id },
+    orderBy: { createdAt: "desc" },
+    include: {
+      _count: {
+        select: {
+          transactions: true,
         },
       },
-    });
+    },
+  });
 
-    // Serialize accounts before sending to client
-    const serializedAccounts = accounts.map(serializeTransaction);
-
-    return serializedAccounts;
-  } catch (error) {
-    console.error(error.message);
-  }
+  // Serialize accounts before sending to client
+  return accounts.map(serializeTransaction);
 }
 
 export async function createAccount(data) {
