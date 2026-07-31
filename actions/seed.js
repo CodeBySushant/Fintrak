@@ -1,10 +1,8 @@
 "use server";
 
 import { db } from "@/lib/prisma";
+import { auth } from "@clerk/nextjs/server";
 import { subDays } from "date-fns";
-
-const ACCOUNT_ID = "account-id";
-const USER_ID = "user-id";
 
 // Categories with their typical amount ranges
 const CATEGORIES = {
@@ -44,6 +42,27 @@ function getRandomCategory(type) {
 
 export async function seedTransactions() {
   try {
+    // Seed into the SIGNED-IN user's default account (no hardcoded IDs)
+    const { userId: clerkUserId } = await auth();
+    if (!clerkUserId) throw new Error("Unauthorized");
+
+    const user = await db.user.findUnique({
+      where: { clerkUserId },
+    });
+    if (!user) throw new Error("User not found");
+
+    const account = await db.account.findFirst({
+      where: { userId: user.id, isDefault: true },
+    });
+    if (!account) {
+      throw new Error(
+        "Create an account first — seeding needs a default account"
+      );
+    }
+
+    const USER_ID = user.id;
+    const ACCOUNT_ID = account.id;
+
     // Generate 90 days of transactions
     const transactions = [];
     let totalBalance = 0;

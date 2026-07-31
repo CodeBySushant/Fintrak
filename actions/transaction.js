@@ -5,7 +5,7 @@ import { db } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { addDays, addWeeks, addMonths, addYears } from "date-fns";
-import aj from "@/lib/arcjet";
+import aj, { ajAI } from "@/lib/arcjet";
 import { request } from "@arcjet/next";
 import {
   getExchangeRates,
@@ -276,6 +276,31 @@ export async function getUserTransactions(query = {}) {
 // Scan Receipt
 export async function scanReceipt(file) {
   try {
+    // SECURITY: this action calls a paid AI API — it must be signed-in
+    // only and rate limited, otherwise anyone can burn the Gemini quota.
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+
+    const req = await request();
+    const decision = await ajAI.protect(req, { userId, requested: 1 });
+    if (decision.isDenied()) {
+      if (decision.reason.isRateLimit()) {
+        throw new Error(
+          "You've scanned a lot of receipts — please try again in a bit."
+        );
+      }
+      throw new Error("Request blocked");
+    }
+
+    // Basic input hardening: images only, capped at 5MB server-side too
+    // (the client checks size, but server actions can be called directly).
+    if (!file?.type?.startsWith("image/")) {
+      throw new Error("Only image files can be scanned");
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      throw new Error("File size should be less than 5MB");
+    }
+
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     // Convert File to ArrayBuffer
@@ -332,7 +357,7 @@ export async function scanReceipt(file) {
     }
   } catch (error) {
     console.error("Error scanning receipt:", error);
-    throw new Error("Failed to scan receipt");
+    throw new Error(error.message || "Failed to scan receipt");
   }
 }
 
