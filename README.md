@@ -15,7 +15,7 @@ The platform helps users track income and expenses, gain AI-driven financial ins
 - 🛡 Security, rate limiting, and bot protection (ArcJet)
 - 🎨 Modern, responsive UI (Tailwind CSS + Shadcn UI)
 - 🗄 Type-safe database access with Prisma
-- ☁ Scalable PostgreSQL database using Supabase
+- ☁ MySQL database with type-safe Prisma access
 
 ---
 
@@ -23,7 +23,7 @@ The platform helps users track income and expenses, gain AI-driven financial ins
 
 - **Frontend:** Next.js, Tailwind CSS, Shadcn UI  
 - **Backend:** Next.js API Routes  
-- **Database:** Supabase (PostgreSQL)  
+- **Database:** MySQL  
 - **ORM:** Prisma  
 - **Authentication:** Clerk  
 - **AI:** Google Gemini API  
@@ -44,9 +44,10 @@ The platform helps users track income and expenses, gain AI-driven financial ins
 Create a `.env` file in the root directory and add the following variables:
 
 ```env
-# Database
+# Database (MySQL)
+# local:  mysql://root:yourpassword@localhost:3306/fintrak
+# hosted: copy the connection string from your MySQL provider
 DATABASE_URL=
-DIRECT_URL=
 
 # Authentication (Clerk)
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
