@@ -5,6 +5,7 @@ import { db } from "@/lib/prisma";
 import { request } from "@arcjet/next";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
+import { getExchangeRates, convertToBase } from "@/lib/exchange-rates";
 
 const serializeTransaction = (obj) => {
   const serialized = { ...obj };
@@ -91,10 +92,14 @@ export async function createAccount(data) {
     }
 
     // Convert balance to float before saving
-    const balanceFloat = parseFloat(data.balance);
+    let balanceFloat = parseFloat(data.balance);
     if (isNaN(balanceFloat)) {
       throw new Error("Invalid balance amount");
     }
+
+    // The user typed the balance in their display currency; store base INR.
+    const { rates } = await getExchangeRates();
+    balanceFloat = convertToBase(balanceFloat, user.currency, rates);
 
     // Check if this is the user's first account
     const existingAccounts = await db.account.findMany({

@@ -14,7 +14,7 @@ model User {
   email         String    @unique
   name          String?
   imageUrl      String?
-  currency    String   @default("USD") 
+  currency    String   @default("INR") 
   transactions  Transaction[]
   accounts      Account[]
   budgets       Budget[]

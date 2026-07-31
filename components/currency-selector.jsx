@@ -16,7 +16,7 @@ import { useCurrency } from "@/components/currency-context";
 import { updateUserCurrency } from "@/actions/currency";
 
 export default function CurrencySelector() {
-  const { code, setCode, currency } = useCurrency();
+  const { code, setCode, currency, notifyChanged } = useCurrency();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [pending, startTransition] = useTransition();
@@ -43,6 +43,7 @@ export default function CurrencySelector() {
       try {
         await updateUserCurrency(c.code);
         router.refresh(); // re-render server amounts in the new currency
+        notifyChanged(); // "Currency updated to India — INR (₹)"
       } catch (e) {
         setCode(prev); // roll back on failure
         toast.error("Couldn't save your currency. Please try again.");

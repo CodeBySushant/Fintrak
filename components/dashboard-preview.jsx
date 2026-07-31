@@ -1,5 +1,7 @@
 "use client";
 
+import { useCurrency } from "@/components/currency-context";
+
 import React from "react";
 import {
   ArrowUpRight,
@@ -76,15 +78,18 @@ function Donut() {
   );
 }
 
+// Demo amounts are in the base currency (INR); format() converts +
+// localizes them to whatever country the visitor picks in the navbar.
 const TX = [
-  { icon: Home, name: "Apartment rent", cat: "Housing", amt: -1450, color: "#ef4444" },
-  { icon: Wallet, name: "Salary", cat: "Income", amt: 5200, color: "#10b981" },
-  { icon: ShoppingBag, name: "Whole Foods", cat: "Groceries", amt: -86.4, color: "#84cc16" },
-  { icon: Car, name: "Shell fuel", cat: "Transport", amt: -52.1, color: "#f97316" },
+  { icon: Home, name: "Apartment rent", cat: "Housing", amt: -18500, color: "#ef4444" },
+  { icon: Wallet, name: "Salary", cat: "Income", amt: 85000, color: "#10b981" },
+  { icon: ShoppingBag, name: "BigBasket order", cat: "Groceries", amt: -2340, color: "#84cc16" },
+  { icon: Car, name: "Fuel", cat: "Transport", amt: -1800, color: "#f97316" },
 ];
 
 export default function DashboardMock({ variant = "full" }) {
   const compact = variant === "compact";
+  const { format } = useCurrency();
 
   return (
     <div
@@ -108,7 +113,7 @@ export default function DashboardMock({ variant = "full" }) {
           <div>
             <p className="text-xs font-medium text-[#6b7280]">Total balance</p>
             <p className="font-num mt-1 text-2xl sm:text-[28px] font-semibold tracking-tight text-[#111827]">
-              $48,920.50
+              {format(482920.5)}
             </p>
           </div>
           <span className="inline-flex items-center gap-1 rounded-full border border-[#10b981]/20 bg-[#10b981]/[0.06] px-2.5 py-1 text-xs font-semibold text-[#10b981]">
@@ -157,9 +162,9 @@ export default function DashboardMock({ variant = "full" }) {
               </p>
               <div className="space-y-3">
                 {[
-                  ["Groceries", "$420 / $600", 70, "#10b981"],
-                  ["Dining", "$310 / $350", 88, "#f59e0b"],
-                  ["Shopping", "$540 / $500", 100, "#ef4444"],
+                  ["Groceries", `${format(8400)} / ${format(12000)}`, 70, "#10b981"],
+                  ["Dining", `${format(6200)} / ${format(7000)}`, 88, "#f59e0b"],
+                  ["Shopping", `${format(10800)} / ${format(10000)}`, 100, "#ef4444"],
                 ].map(([label, val, pct, color]) => (
                   <div key={label}>
                     <div className="mb-1 flex justify-between text-xs text-[#6b7280]">
@@ -212,10 +217,8 @@ export default function DashboardMock({ variant = "full" }) {
                     ) : (
                       <ArrowDownRight className="h-3.5 w-3.5 text-[#9ca3af]" />
                     )}
-                    {positive ? "+" : "-"}$
-                    {Math.abs(t.amt).toLocaleString("en-US", {
-                      minimumFractionDigits: 2,
-                    })}
+                    {positive ? "+" : "-"}
+                    {format(Math.abs(t.amt))}
                   </span>
                 </li>
               );

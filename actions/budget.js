@@ -3,6 +3,7 @@
 import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
+import { getExchangeRates, convertToBase } from "@/lib/exchange-rates";
 
 export async function getCurrentBudget(accountId) {
   try {
@@ -73,6 +74,10 @@ export async function updateBudget(amount) {
     });
 
     if (!user) throw new Error("User not found");
+
+    // Budget was typed in the user's display currency; store base INR.
+    const { rates } = await getExchangeRates();
+    amount = convertToBase(amount, user.currency, rates);
 
     // Update or create budget
     const budget = await db.budget.upsert({

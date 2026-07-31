@@ -6,6 +6,11 @@ import { revalidatePath } from "next/cache";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import aj from "@/lib/arcjet";
 import { request } from "@arcjet/next";
+import {
+  getExchangeRates,
+  convertToBase,
+  convertFromBase,
+} from "@/lib/exchange-rates";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -65,6 +70,12 @@ export async function createTransaction(data) {
       throw new Error("Account not found");
     }
 
+    // Amounts are STORED in the base currency (INR). The user typed the
+    // amount in their selected display currency — convert it to base.
+    const { rates } = await getExchangeRates();
+    const amountInBase = convertToBase(data.amount, user.currency, rates);
+    data = { ...data, amount: amountInBase };
+
     // Calculate new balance
     const balanceChange = data.type === "EXPENSE" ? -data.amount : data.amount;
     const newBalance = account.balance.toNumber() + balanceChange;
@@ -118,7 +129,15 @@ export async function getTransaction(id) {
 
   if (!transaction) throw new Error("Transaction not found");
 
-  return serializeAmount(transaction);
+  // The edit form shows/edits the amount in the user's display currency,
+  // so convert the stored base (INR) amount before returning it.
+  const { rates } = await getExchangeRates();
+  const serialized = serializeAmount(transaction);
+  serialized.amount = Number(
+    convertFromBase(serialized.amount, user.currency, rates).toFixed(2)
+  );
+
+  return serialized;
 }
 
 export async function updateTransaction(id, data) {
@@ -144,6 +163,13 @@ export async function updateTransaction(id, data) {
     });
 
     if (!originalTransaction) throw new Error("Transaction not found");
+
+    // Incoming amount is in the user's display currency; storage is base INR.
+    const { rates } = await getExchangeRates();
+    data = {
+      ...data,
+      amount: convertToBase(data.amount, user.currency, rates),
+    };
 
     // Calculate balance changes
     const oldBalanceChange =

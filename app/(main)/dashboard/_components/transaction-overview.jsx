@@ -10,6 +10,7 @@ import {
   Legend,
 } from "recharts";
 import { format } from "date-fns";
+import { useCurrency } from "@/components/currency-context";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 
 import {
@@ -33,6 +34,7 @@ const COLORS = [
 ];
 
 export function DashboardOverview({ accounts, transactions }) {
+  const { format: formatAmount, convert } = useCurrency();
   const [selectedAccountId, setSelectedAccountId] = useState(
     accounts.find((a) => a.isDefault)?.id || accounts[0]?.id
   );
@@ -134,7 +136,7 @@ export function DashboardOverview({ accounts, transactions }) {
                       ) : (
                         <ArrowUpRight className="mr-1 h-4 w-4" />
                       )}
-                      ${transaction.amount.toFixed(2)}
+                      {formatAmount(transaction.amount)}
                     </div>
                   </div>
                 </div>
@@ -167,7 +169,9 @@ export function DashboardOverview({ accounts, transactions }) {
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
-                    label={({ name, value }) => `${name}: $${value.toFixed(2)}`}
+                    label={({ name, value }) =>
+                      `${name}: ${formatAmount(value)}`
+                    }
                   >
                     {pieChartData.map((entry, index) => (
                       <Cell

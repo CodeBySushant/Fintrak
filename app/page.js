@@ -48,8 +48,8 @@ function ReceiptVisual() {
       </div>
       <div className="mt-4 space-y-2">
         {[
-          ["Merchant", "Whole Foods Market"],
-          ["Amount", "$86.40"],
+          ["Merchant", "BigBasket"],
+          ["Amount", "₹2,340.00"],
           ["Date", "Jun 28, 2026"],
           ["Category", "Groceries"],
         ].map(([k, v], i) => (

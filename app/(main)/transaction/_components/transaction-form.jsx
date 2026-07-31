@@ -30,6 +30,7 @@ import { cn } from "@/lib/utils";
 import { createTransaction, updateTransaction } from "@/actions/transaction";
 import { transactionSchema } from "@/app/lib/schema";
 import { ReceiptScanner } from "./recipt-scanner";
+import { useCurrency } from "@/components/currency-context";
 
 export function AddTransactionForm({
   accounts,
@@ -38,6 +39,7 @@ export function AddTransactionForm({
   initialData = null,
 }) {
   const router = useRouter();
+  const { format: formatAmount, currency } = useCurrency();
   const searchParams = useSearchParams();
   const editId = searchParams.get("edit");
 
@@ -156,7 +158,9 @@ export function AddTransactionForm({
       {/* Amount and Account */}
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-2">
-          <label className="text-sm font-medium">Amount</label>
+          <label className="text-sm font-medium">
+            Amount ({currency.symbol} {currency.code})
+          </label>
           <Input
             type="number"
             step="0.01"
@@ -180,7 +184,7 @@ export function AddTransactionForm({
             <SelectContent>
               {accounts.map((account) => (
                 <SelectItem key={account.id} value={account.id}>
-                  {account.name} (${parseFloat(account.balance).toFixed(2)})
+                  {account.name} ({formatAmount(account.balance)})
                 </SelectItem>
               ))}
               <CreateAccountDrawer>

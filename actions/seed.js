@@ -8,23 +8,24 @@ const USER_ID = "user-id";
 
 // Categories with their typical amount ranges
 const CATEGORIES = {
+  // Amounts are in the base currency (INR) — India-realistic ranges.
   INCOME: [
-    { name: "salary", range: [5000, 8000] },
-    { name: "freelance", range: [1000, 3000] },
-    { name: "investments", range: [500, 2000] },
-    { name: "other-income", range: [100, 1000] },
+    { name: "salary", range: [45000, 120000] },
+    { name: "freelance", range: [8000, 40000] },
+    { name: "investments", range: [3000, 20000] },
+    { name: "other-income", range: [1000, 8000] },
   ],
   EXPENSE: [
-    { name: "housing", range: [1000, 2000] },
-    { name: "transportation", range: [100, 500] },
-    { name: "groceries", range: [200, 600] },
-    { name: "utilities", range: [100, 300] },
-    { name: "entertainment", range: [50, 200] },
-    { name: "food", range: [50, 150] },
-    { name: "shopping", range: [100, 500] },
-    { name: "healthcare", range: [100, 1000] },
-    { name: "education", range: [200, 1000] },
-    { name: "travel", range: [500, 2000] },
+    { name: "housing", range: [10000, 30000] },
+    { name: "transportation", range: [1500, 6000] },
+    { name: "groceries", range: [3000, 9000] },
+    { name: "utilities", range: [1000, 4000] },
+    { name: "entertainment", range: [500, 3000] },
+    { name: "food", range: [400, 2500] },
+    { name: "shopping", range: [1000, 8000] },
+    { name: "healthcare", range: [800, 10000] },
+    { name: "education", range: [2000, 15000] },
+    { name: "travel", range: [4000, 25000] },
   ],
 };
 

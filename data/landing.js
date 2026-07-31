@@ -12,7 +12,7 @@ import {
 // ----------------------------------------------------------------------
 export const statsData = [
   { value: "50K+", label: "Active Users" },
-  { value: "$2B+", label: "Transactions Tracked" },
+  { value: "12M+", label: "Transactions Tracked" },
   { value: "99.9%", label: "Uptime" },
   { value: "4.9/5", label: "User Rating" },
 ];
@@ -20,7 +20,7 @@ export const statsData = [
 // Numeric version used by the animated counters on the landing page.
 export const trustStats = [
   { value: 50, suffix: "K+", label: "Active users" },
-  { value: 2, prefix: "$", suffix: "B+", label: "Transactions tracked" },
+  { value: 12, prefix: "", suffix: "M+", label: "Transactions tracked" },
   { value: 120, suffix: "+", label: "Countries supported" },
   { value: 99.9, suffix: "%", decimals: 1, label: "Uptime" },
   { value: 4.9, suffix: "/5", decimals: 1, label: "Average rating" },

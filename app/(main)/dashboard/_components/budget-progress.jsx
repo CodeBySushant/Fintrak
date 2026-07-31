@@ -16,11 +16,14 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { updateBudget } from "@/actions/budget";
+import { useCurrency } from "@/components/currency-context";
 
 export function BudgetProgress({ initialBudget, currentExpenses }) {
+  const { format, convert } = useCurrency();
   const [isEditing, setIsEditing] = useState(false);
+  // the edit input works in the user's DISPLAY currency
   const [newBudget, setNewBudget] = useState(
-    initialBudget?.amount?.toString() || ""
+    initialBudget?.amount ? convert(initialBudget.amount).toFixed(2) : ""
   );
 
   const {
@@ -46,7 +49,9 @@ export function BudgetProgress({ initialBudget, currentExpenses }) {
   };
 
   const handleCancel = () => {
-    setNewBudget(initialBudget?.amount?.toString() || "");
+    setNewBudget(
+      initialBudget?.amount ? convert(initialBudget.amount).toFixed(2) : ""
+    );
     setIsEditing(false);
   };
 
@@ -103,15 +108,23 @@ export function BudgetProgress({ initialBudget, currentExpenses }) {
               <>
                 <CardDescription>
                   {initialBudget
-                    ? `$${currentExpenses.toFixed(
-                        2
-                      )} of $${initialBudget.amount.toFixed(2)} spent`
+                    ? `${format(currentExpenses)} of ${format(
+                        initialBudget.amount
+                      )} spent`
                     : "No budget set"}
                 </CardDescription>
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setIsEditing(true)}
+                  onClick={() => {
+                    // seed the input with the budget in the user's currency
+                    setNewBudget(
+                      initialBudget?.amount
+                        ? convert(initialBudget.amount).toFixed(2)
+                        : ""
+                    );
+                    setIsEditing(true);
+                  }}
                   className="h-6 w-6"
                 >
                   <Pencil className="h-3 w-3" />
