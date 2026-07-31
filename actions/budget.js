@@ -3,9 +3,10 @@
 import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
+import { startOfMonth, endOfMonth } from "date-fns";
 import { getExchangeRates, convertToBase } from "@/lib/exchange-rates";
 
-export async function getCurrentBudget(accountId) {
+export async function getCurrentBudget() {
   try {
     const { userId } = await auth();
     if (!userId) throw new Error("Unauthorized");
@@ -24,28 +25,20 @@ export async function getCurrentBudget(accountId) {
       },
     });
 
-    // Get current month's expenses
-    const currentDate = new Date();
-    const startOfMonth = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      1
-    );
-    const endOfMonth = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth() + 1,
-      0
-    );
-
+    // Current month's expenses across ALL accounts — the budget is
+    // user-level, so it should measure user-level spending.
+    // date-fns endOfMonth() = 23:59:59.999 on the last day, so spending
+    // on the final day of the month is counted (the old manual Date math
+    // cut off at midnight and silently excluded it).
+    const now = new Date();
     const expenses = await db.transaction.aggregate({
       where: {
         userId: user.id,
         type: "EXPENSE",
         date: {
-          gte: startOfMonth,
-          lte: endOfMonth,
+          gte: startOfMonth(now),
+          lte: endOfMonth(now),
         },
-        accountId,
       },
       _sum: {
         amount: true,

@@ -61,9 +61,6 @@ export default function Navbar() {
             <a href="#showcase" className="text-[15px] font-medium text-[#374151] transition-colors hover:text-[#111827]">
               Product
             </a>
-            <a href="#testimonials" className="text-[15px] font-medium text-[#374151] transition-colors hover:text-[#111827]">
-              Customers
-            </a>
           </SignedOut>
         </div>
 

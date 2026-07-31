@@ -50,15 +50,21 @@ function readCachedRates() {
   }
 }
 
-export function CurrencyProvider({ initialCode = DEFAULT_CURRENCY, children }) {
+export function CurrencyProvider({
+  initialCode = DEFAULT_CURRENCY,
+  isSignedIn = false,
+  children,
+}) {
   const [code, setCodeState] = useState(initialCode);
   const [rates, setRates] = useState(null);
   const [ratesLoading, setRatesLoading] = useState(true);
 
-  // Fast paint: restore last-used currency from localStorage when the
-  // server didn't have one (signed-out visitors on the landing page).
+  // Fast paint for signed-out visitors: restore their last-used currency
+  // from localStorage. Signed-in users NEVER restore from localStorage —
+  // their database preference (initialCode) is the source of truth, which
+  // prevents a stale local value from overriding what they saved.
   useEffect(() => {
-    if (initialCode === DEFAULT_CURRENCY) {
+    if (!isSignedIn && initialCode === DEFAULT_CURRENCY) {
       try {
         const saved = localStorage.getItem(LS_CODE_KEY);
         if (saved && isValidCurrency(saved) && saved !== code) {
@@ -68,6 +74,17 @@ export function CurrencyProvider({ initialCode = DEFAULT_CURRENCY, children }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Keep the localStorage copy in sync with the DB value for signed-in
+  // users so a later signed-out visit starts from their real preference.
+  useEffect(() => {
+    if (isSignedIn) {
+      try {
+        localStorage.setItem(LS_CODE_KEY, initialCode);
+      } catch {}
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSignedIn, initialCode]);
 
   // Load rates: cached copy first (instant), then refresh from the API.
   useEffect(() => {

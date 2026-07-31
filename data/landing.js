@@ -8,25 +8,6 @@ import {
 } from "lucide-react";
 
 // ----------------------------------------------------------------------
-// Stats (kept for backward compatibility)
-// ----------------------------------------------------------------------
-export const statsData = [
-  { value: "50K+", label: "Active Users" },
-  { value: "12M+", label: "Transactions Tracked" },
-  { value: "99.9%", label: "Uptime" },
-  { value: "4.9/5", label: "User Rating" },
-];
-
-// Numeric version used by the animated counters on the landing page.
-export const trustStats = [
-  { value: 50, suffix: "K+", label: "Active users" },
-  { value: 12, prefix: "", suffix: "M+", label: "Transactions tracked" },
-  { value: 120, suffix: "+", label: "Countries supported" },
-  { value: 99.9, suffix: "%", decimals: 1, label: "Uptime" },
-  { value: 4.9, suffix: "/5", decimals: 1, label: "Average rating" },
-];
-
-// ----------------------------------------------------------------------
 // Features
 // ----------------------------------------------------------------------
 export const featuresData = [
@@ -111,29 +92,7 @@ export const benefitsData = {
 // ----------------------------------------------------------------------
 // Testimonials
 // ----------------------------------------------------------------------
-export const testimonialsData = [
-  {
-    name: "Sarah Johnson",
-    role: "Small Business Owner",
-    image: "https://randomuser.me/api/portraits/women/75.jpg",
-    quote:
-      "Fintrak has transformed how I manage my business finances. The AI insights helped me find cost-saving opportunities I never knew existed.",
-  },
-  {
-    name: "Michael Chen",
-    role: "Freelancer",
-    image: "https://randomuser.me/api/portraits/men/75.jpg",
-    quote:
-      "The receipt scanning feature saves me hours each month. Now I focus on my work instead of manual data entry and expense tracking.",
-  },
-  {
-    name: "Emily Rodriguez",
-    role: "Financial Advisor",
-    image: "https://randomuser.me/api/portraits/women/74.jpg",
-    quote:
-      "I recommend Fintrak to all my clients. The multi-currency support and detailed analytics make it perfect for international investors.",
-  },
-];
+
 
 // ----------------------------------------------------------------------
 // Footer
@@ -144,7 +103,6 @@ export const footerSections = [
     links: [
       { label: "Features", href: "#features" },
       { label: "Product tour", href: "#showcase" },
-      { label: "Customers", href: "#testimonials" },
       { label: "Dashboard", href: "/dashboard" },
     ],
   },

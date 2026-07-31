@@ -6,13 +6,11 @@ import { ArrowRight, ScanLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import HeroSection from "@/components/hero";
 import DashboardMock from "@/components/dashboard-preview";
-import { Reveal, AnimatedCounter } from "@/components/landing-motion";
+import { Reveal } from "@/components/landing-motion";
 import {
-  trustStats,
   featuresData,
   howItWorksData,
   benefitsData,
-  testimonialsData,
   footerSections,
 } from "@/data/landing";
 
@@ -27,7 +25,7 @@ function AnalyticsVisual() {
       </div>
       <div className="flex h-40 items-end gap-3">
         {bars.map((h, i) => (
-          <div key={i} className="flex-1">
+          <div key={i} className="flex h-full flex-1 items-end">
             <div
               className="w-full rounded-t-[3px] bg-[#111827]"
               style={{ height: `${h}%`, opacity: i === bars.length - 1 ? 1 : 0.22 + i * 0.1 }}
@@ -104,27 +102,6 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white">
       <HeroSection />
-
-      {/* ---------------- Trust strip ---------------- */}
-      <section aria-label="Fintrak by the numbers" className="border-y border-[#e5e7eb]">
-        <div className="container mx-auto px-4 py-10">
-          <Reveal className="grid grid-cols-2 gap-y-8 sm:grid-cols-5">
-            {trustStats.map((s, i) => (
-              <div key={i} className="text-center">
-                <div className="font-num text-2xl font-semibold tracking-tight text-[#111827] sm:text-3xl">
-                  <AnimatedCounter
-                    value={s.value}
-                    prefix={s.prefix || ""}
-                    suffix={s.suffix || ""}
-                    decimals={s.decimals || 0}
-                  />
-                </div>
-                <div className="mt-1 text-[13px] text-[#6b7280]">{s.label}</div>
-              </div>
-            ))}
-          </Reveal>
-        </div>
-      </section>
 
       {/* ---------------- Features ---------------- */}
       <section id="features" className="py-24 sm:py-32" aria-labelledby="features-title">
@@ -253,40 +230,6 @@ export default function LandingPage() {
               </div>
             ))}
           </Reveal>
-        </div>
-      </section>
-
-      {/* ---------------- Testimonials — editorial ---------------- */}
-      <section id="testimonials" className="py-24 sm:py-32" aria-labelledby="testimonials-title">
-        <div className="container mx-auto px-4">
-          <Reveal className="max-w-2xl">
-            <h2 id="testimonials-title" className="display-lg text-[#111827]">
-              In their words
-            </h2>
-          </Reveal>
-
-          <div className="mt-14 grid gap-x-10 gap-y-12 md:grid-cols-3">
-            {testimonialsData.map((t, i) => (
-              <Reveal key={i} delay={i * 100} className="border-t border-[#111827] pt-6">
-                <p className="font-display text-[19px] leading-relaxed text-[#111827]">
-                  {t.quote}
-                </p>
-                <div className="mt-6 flex items-center gap-3">
-                  <Image
-                    src={t.image}
-                    alt={t.name}
-                    width={40}
-                    height={40}
-                    className="h-10 w-10 rounded-full object-cover grayscale"
-                  />
-                  <div>
-                    <div className="text-sm font-semibold text-[#111827]">{t.name}</div>
-                    <div className="text-xs text-[#6b7280]">{t.role}</div>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
         </div>
       </section>
 

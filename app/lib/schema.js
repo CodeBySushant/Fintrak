@@ -3,14 +3,26 @@ import { z } from "zod";
 export const accountSchema = z.object({
   name: z.string().min(1, "Name is required"),
   type: z.enum(["CURRENT", "SAVINGS"]),
-  balance: z.string().min(1, "Initial balance is required"),
+  balance: z
+    .string()
+    .min(1, "Initial balance is required")
+    .refine((v) => {
+      const n = parseFloat(v);
+      return !isNaN(n) && n >= 0;
+    }, "Balance must be a valid number (0 or more)"),
   isDefault: z.boolean().default(false),
 });
 
 export const transactionSchema = z
   .object({
     type: z.enum(["INCOME", "EXPENSE"]),
-    amount: z.string().min(1, "Amount is required"),
+    amount: z
+      .string()
+      .min(1, "Amount is required")
+      .refine((v) => {
+        const n = parseFloat(v);
+        return !isNaN(n) && n > 0;
+      }, "Amount must be greater than 0"),
     description: z.string().optional(),
     date: z.date({ required_error: "Date is required" }),
     accountId: z.string().min(1, "Account is required"),

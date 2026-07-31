@@ -4,6 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { addDays, addWeeks, addMonths, addYears } from "date-fns";
 import aj from "@/lib/arcjet";
 import { request } from "@arcjet/next";
 import {
@@ -76,9 +77,9 @@ export async function createTransaction(data) {
     const amountInBase = convertToBase(data.amount, user.currency, rates);
     data = { ...data, amount: amountInBase };
 
-    // Calculate new balance
+    // Balance delta for this transaction (applied atomically below, so
+    // concurrent requests can't clobber each other's balance writes)
     const balanceChange = data.type === "EXPENSE" ? -data.amount : data.amount;
-    const newBalance = account.balance.toNumber() + balanceChange;
 
     // Create transaction and update account balance
     const transaction = await db.$transaction(async (tx) => {
@@ -95,7 +96,7 @@ export async function createTransaction(data) {
 
       await tx.account.update({
         where: { id: data.accountId },
-        data: { balance: newBalance },
+        data: { balance: { increment: balanceChange } },
       });
 
       return newTransaction;
@@ -171,6 +172,15 @@ export async function updateTransaction(id, data) {
       amount: convertToBase(data.amount, user.currency, rates),
     };
 
+    // If the account changed, make sure the target account is the user's.
+    const accountChanged = data.accountId !== originalTransaction.accountId;
+    if (accountChanged) {
+      const newAccount = await db.account.findUnique({
+        where: { id: data.accountId, userId: user.id },
+      });
+      if (!newAccount) throw new Error("Account not found");
+    }
+
     // Calculate balance changes
     const oldBalanceChange =
       originalTransaction.type === "EXPENSE"
@@ -180,9 +190,7 @@ export async function updateTransaction(id, data) {
     const newBalanceChange =
       data.type === "EXPENSE" ? -data.amount : data.amount;
 
-    const netBalanceChange = newBalanceChange - oldBalanceChange;
-
-    // Update transaction and account balance in a transaction
+    // Update transaction and account balance(s) in one atomic transaction
     const transaction = await db.$transaction(async (tx) => {
       const updated = await tx.transaction.update({
         where: {
@@ -198,21 +206,33 @@ export async function updateTransaction(id, data) {
         },
       });
 
-      // Update account balance
-      await tx.account.update({
-        where: { id: data.accountId },
-        data: {
-          balance: {
-            increment: netBalanceChange,
-          },
-        },
-      });
+      if (accountChanged) {
+        // Reverse the old effect on the ORIGINAL account…
+        await tx.account.update({
+          where: { id: originalTransaction.accountId },
+          data: { balance: { increment: -oldBalanceChange } },
+        });
+        // …and apply the new effect on the NEW account.
+        await tx.account.update({
+          where: { id: data.accountId },
+          data: { balance: { increment: newBalanceChange } },
+        });
+      } else {
+        // Same account: apply only the net difference.
+        await tx.account.update({
+          where: { id: data.accountId },
+          data: { balance: { increment: newBalanceChange - oldBalanceChange } },
+        });
+      }
 
       return updated;
     });
 
     revalidatePath("/dashboard");
     revalidatePath(`/account/${data.accountId}`);
+    if (accountChanged) {
+      revalidatePath(`/account/${originalTransaction.accountId}`);
+    }
 
     return { success: true, data: serializeAmount(transaction) };
   } catch (error) {
@@ -316,24 +336,21 @@ export async function scanReceipt(file) {
   }
 }
 
-// Helper function to calculate next recurring date
+// Helper function to calculate next recurring date.
+// date-fns clamps month-end correctly (Jan 31 + 1 month = Feb 28/29,
+// not Mar 3 like naive setMonth()).
 function calculateNextRecurringDate(startDate, interval) {
   const date = new Date(startDate);
-
   switch (interval) {
     case "DAILY":
-      date.setDate(date.getDate() + 1);
-      break;
+      return addDays(date, 1);
     case "WEEKLY":
-      date.setDate(date.getDate() + 7);
-      break;
+      return addWeeks(date, 1);
     case "MONTHLY":
-      date.setMonth(date.getMonth() + 1);
-      break;
+      return addMonths(date, 1);
     case "YEARLY":
-      date.setFullYear(date.getFullYear() + 1);
-      break;
+      return addYears(date, 1);
+    default:
+      return date;
   }
-
-  return date;
 }

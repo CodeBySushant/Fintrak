@@ -124,26 +124,28 @@ export async function updateDefaultAccount(accountId) {
       throw new Error("User not found");
     }
 
-    // First, unset any existing default account
-    await db.account.updateMany({
-      where: {
-        userId: user.id,
-        isDefault: true,
-      },
-      data: { isDefault: false },
-    });
+    // Unset the old default and set the new one atomically — a failure
+    // between the two can never leave the user with zero default accounts.
+    const account = await db.$transaction(async (tx) => {
+      await tx.account.updateMany({
+        where: {
+          userId: user.id,
+          isDefault: true,
+        },
+        data: { isDefault: false },
+      });
 
-    // Then set the new default account
-    const account = await db.account.update({
-      where: {
-        id: accountId,
-        userId: user.id,
-      },
-      data: { isDefault: true },
+      return await tx.account.update({
+        where: {
+          id: accountId,
+          userId: user.id,
+        },
+        data: { isDefault: true },
+      });
     });
 
     revalidatePath("/dashboard");
-    return { success: true, data: serializeTransaction(account) };
+    return { success: true, data: serializeDecimal(account) };
   } catch (error) {
     return { success: false, error: error.message };
   }

@@ -47,14 +47,10 @@ export default function HeroSection() {
               </a>
             </div>
 
-            {/* trust line — one quiet row, mono figure */}
+            {/* trust line — one quiet row */}
             <div className="mt-8 flex items-center gap-3 text-sm text-[#6b7280]">
               <ShieldCheck className="h-4 w-4 text-[#10b981]" />
-              <span>
-                Bank-grade security ·{" "}
-                <span className="font-num text-[#111827]">50,000+</span> people
-                tracking with Fintrak
-              </span>
+              <span>Bank-grade security. Your data stays yours.</span>
             </div>
           </div>
 

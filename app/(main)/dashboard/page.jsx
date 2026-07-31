@@ -15,13 +15,8 @@ export default async function DashboardPage() {
     getDashboardData(),
   ]);
 
-  const defaultAccount = accounts?.find((account) => account.isDefault);
-
-  // Get budget for default account
-  let budgetData = null;
-  if (defaultAccount) {
-    budgetData = await getCurrentBudget(defaultAccount.id);
-  }
+  // User-level budget, measured across all accounts
+  const budgetData = await getCurrentBudget();
 
   return (
     <div className="space-y-8">

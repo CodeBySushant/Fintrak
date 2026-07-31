@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "sonner";
 import { CurrencyProvider } from "@/components/currency-context";
 import { getUserCurrency } from "@/lib/getUserCurrency";
+import { auth } from "@clerk/nextjs/server";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const fraunces = Fraunces({
@@ -35,7 +36,10 @@ export const viewport = {
 };
 
 export default async function RootLayout({ children }) {
-  // seed the client currency context with the user's saved choice
+  // seed the client currency context with the user's saved choice;
+  // for signed-in users the DATABASE is the source of truth, so the
+  // provider only falls back to localStorage for signed-out visitors
+  const { userId } = await auth();
   const currency = await getUserCurrency();
 
   return (
@@ -44,7 +48,7 @@ export default async function RootLayout({ children }) {
         <body
           className={`${inter.className} ${inter.variable} ${fraunces.variable} ${mono.variable}`}
         >
-          <CurrencyProvider initialCode={currency}>
+          <CurrencyProvider initialCode={currency} isSignedIn={!!userId}>
             <Header />
             <main className="min-h-screen">{children}</main>
             <Toaster richColors />
